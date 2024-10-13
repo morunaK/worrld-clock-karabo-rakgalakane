@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>AI Poem generator</title>
+    <style>
+       body {
+        color: #272142;
+        font-family: Merriweather;
+        background:  #F9F7FE;
+      }
+
+      a {
+        color: #885df1;
+      }
+
+      h1 {
+        font-weight: 800;
+        font-size: 36px;
+        line-height: 1.5;
+        color: #272044;
+        margin: 0;
+      }
+
+      header {
+        display: flex;
+        margin: 30px 0;
+        justify-content:  space-between;
+      }
+
+      header p {
+        margin: 0;
+        opacity: 0.9;
+        line-height: 1.5;
+      }
+
+      header h1 {
+        margin:  0;
+      }
+
+      header img {
+        max-width: 150px;
+      }
+
+      .container {
+        margin:  60px auto;
+        max-width: 600px;
+      }
+
+
+      .header img {
+        margin-top: 5px;
+      }
+
+      .poem {
+        font-size: 16px;
+        padding: 20px;
+        margin-top: 30px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 2;
+        box-shadow: 0px 4px 30px 0px rgba(39, 33, 66, 0.03);
+        border-left: 3px solid #885DF1;
+        background-color: #fff;
+      }
+
+      .poem strong {
+        color: #885df1;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .form-container {
+        padding: 30px;
+        background: #FFFFFF;
+        box-shadow: 0px 20px 60px rgba(65, 50, 100, 0.08);
+        border-radius: 10px;
+      }
+
+      form {
+        display: flex;
+        }
+
+      .hint {
+        line-height: 1.5;
+        margin-top: 5px;
+        opacity: 0.6;
+        font-size: 12px;
+      }
+
+      .instructions {
+        padding: 15px 20px;
+        border: 1px solid rgba(39, 33, 66, 0.5);
+        width: 80%;
+        font-weight: 400;
+        font-size: 16px;
+        border-radius: 50px;
+        line-height: 20px;
+        color: #272044;
+      }
+
+      .waiting {
+        animation: blinker 1s linear infinite;
+      }
+
+      @keyframes blinker {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .btn {
+        margin-left: 10px;
+        background: #885DF1;
+        padding: 14px 24px;
+        border-radius: 50px;
+        border: none;
+        color: #fff;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+      }
+
+      @media (max-width: 900px) {
+        header {
+          text-align: center;
+          display: block;
+          margin: 45px 15px;
+        }
+
+        header p {
+          margin: 10px 0;
+          font-size: 18px;
+        }
+
+        header img {
+          margin-top: 30px;
+        }
+
+        .form-container {
+          padding: 20px;
+        }
+
+        .container {
+          margin: 30px auto,
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div>
+          <h1>Poem generator</h1>
+          <p>
+            Coded with 💜 by
+            <a href="https://www.shecodes.io/" target="_blank">SheCodes</a>,
+            coding workshops for busy women.
+          </p>
+        </div>
+
+        <a href="https://www.shecodes.io/" target="_blank">
+          <img src="images/shecodes.png" alt="" />
+        </a>
+      </header>
+      <div class="form-container">
+        <form id="poem-generator">
+          <input
+            type="text"
+            id="instructions"
+            autofocus
+            class="instructions"
+            required
+            placeholder="Enter the topic of the poem?"
+            autocomplete="off"
+          />
+          <input
+            type="submit"
+            value="Generate Poem"
+            class="btn"
+            id="submit-button"
+          />
+        </form>
+        <div class="hint">i.e: Flower, Paris or Cheese</div>
+      </div>
+      <div id="poem" class="poem"></div>
+    </div>
+    <script>
+      function displayPoem(response) {
+        new Typewriter("#poem", {
+          strings: response.data.answer,
+          autoStart: true,
+          delay: 1,
+        });
+
+        let submitButton = document.querySelector("#submit-button");
+        submitButton.removeAttribute("disabled");
+      }
+
+      function displaySheCodesPoem() {
+        let poem = `
+    SheCodes, a community strong and bright,<br />
+    Women learning to code, taking flight.,<br />
+    With determination and support in sight,,<br />
+    Together we shine, in love for tech we unite.,<br />
+    <strong>SheCodes AI</strong>
+    `;
+
+        new Typewriter("#poem", {
+          strings: poem,
+          autoStart: true,
+          delay: 1,
+        });
+      }
+
+      function generate(event) {
+        event.preventDefault();
+        let apiKey = "cbbfb900d7a3c5f058f2a44a54t3o340";
+        let context =
+          "You are a romantic Poem expert and love to write short poems. You mission is to generate a 4 line poem in basic HTML and separate each line with a <br />. Make sure to follow the user instructions. Do not include a title to the poem. Sign the poem with 'SheCodes AI' inside a <strong> element at the end of the poem and NOT at the beginning. Do not include markdown around it";
+        let instructionsInput = document.querySelector("#instructions");
+        let prompt = `User instructions: Generate a romantic poem about ${instructionsInput.value}`;
+        let apiUrl = `https://api.shecodes.io/ai/v1/generate?context=${context}&prompt=${prompt}&key=${apiKey}`;
+        let submitButton = document.querySelector("#submit-button");
+        submitButton.setAttribute("disabled", "disabled");
+
+        let poemElement = document.querySelector("#poem");
+        poemElement.classList.remove("hidden");
+        poemElement.innerHTML = `<div class="waiting">⏳ Generating a poem about ${instructionsInput.value}..</div>`;
+        axios.get(apiUrl).then(displayPoem);
+      }
+
+      let poemForm = document.querySelector("#poem-generator");
+      poemForm.addEventListener("submit", generate);
+      displaySheCodesPo;
+    </script>
+  </body>
+</html>
